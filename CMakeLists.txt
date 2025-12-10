@@ -30,6 +30,7 @@ target_include_directories(yaml-tool
 target_include_directories(yaml-tool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/3rd.cmake)
+
 # 链接第三方库
 # 这里用PRIVATE明确私有化
 target_link_libraries(yaml-tool PRIVATE yaml-cpp)
