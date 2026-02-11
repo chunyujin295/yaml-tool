@@ -2,7 +2,7 @@
   * 描述：yaml节点类型封装
   *
   * File：yamlnode.h
-  * Author：chenyujin@mozihealthcare.cn
+  * Author：3029795434@qq.com
   * Date：2025/9/2
   * Update：
   * ************************************************/
