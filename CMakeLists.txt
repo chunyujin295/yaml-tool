@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.15)
 project(yaml-tool)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -11,18 +11,24 @@ option(YAML_TOOL_INSTALL "Install yaml-tool" ON)
 if (YAML_TOOL_BUILD_SHARED_LIBS)
     set(yaml-tool-type SHARED)
     set(yaml-tool-label-postfix "shared")
-else()
+else ()
     set(yaml-tool-type STATIC)
     set(yaml-tool-label-postfix "static")
-endif()
+endif ()
 
 add_library(yaml-tool ${yaml-tool-type} "")
 
 # 只有动态库的时候才需要导出宏
-if(YAML_TOOL_BUILD_SHARED_LIBS)
-target_compile_definitions(yaml-tool
-        PRIVATE YAML_TOOL_BUILDING_LIBRARY
-) # 定义导出宏
+if (YAML_TOOL_BUILD_SHARED_LIBS)
+    target_compile_definitions(yaml-tool
+            PRIVATE YAML_TOOL_BUILDING_LIBRARY
+    ) # 定义导出宏
+
+    # 动态库避免符号冲突
+    set_target_properties(yaml-tool PROPERTIES
+            CXX_VISIBILITY_PRESET hidden
+            VISIBILITY_INLINES_HIDDEN YES
+    )
 endif ()
 
 file(GLOB_RECURSE srcs CONFIGURE_DEPENDS
@@ -46,7 +52,7 @@ target_include_directories(yaml-tool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/3rd.cmake)
 
 # 链接第三方库
-# 这里用PRIVATE明确私有化
+# yaml-cpp作为静态库打入，这里用PRIVATE需要明确私有化
 target_link_libraries(yaml-tool PRIVATE yaml-cpp)
 
 set_target_properties(yaml-tool
@@ -58,30 +64,30 @@ set_target_properties(yaml-tool
 
 
 # 发布/安装脚本
-if(YAML_TOOL_INSTALL)
-install(TARGETS yaml-tool
-        EXPORT yaml-toolTargets
-        RUNTIME DESTINATION bin      # Windows DLL
-        LIBRARY DESTINATION lib      # .so / .dylib
-        ARCHIVE DESTINATION lib      # static lib / import lib
-)
-install(
-        DIRECTORY include/
-        DESTINATION include
-)
+if (YAML_TOOL_INSTALL)
+    install(TARGETS yaml-tool
+            EXPORT yaml-toolTargets
+            RUNTIME DESTINATION bin      # Windows DLL
+            LIBRARY DESTINATION lib      # .so / .dylib
+            ARCHIVE DESTINATION lib      # static lib / import lib
+    )
+    install(
+            DIRECTORY include/
+            DESTINATION include
+    )
 
-# 生成Config文件，确保调用方可以使用find_package
-install(EXPORT yaml-toolTargets
-        FILE yaml-toolTargets.cmake
-        NAMESPACE yaml-tool::
-        DESTINATION lib/cmake/yaml-tool
-)
+    # 生成Config文件，确保调用方可以使用find_package
+    install(EXPORT yaml-toolTargets
+            FILE yaml-toolTargets.cmake
+            NAMESPACE yaml-tool::
+            DESTINATION lib/cmake/yaml-tool
+    )
 
-# 如果第三方库导出作为动态库，那么install的时候需要附带
-#install(TARGETS yaml-cpp
-#        EXPORT yaml-toolTargets
-#)
-endif()
+    # 如果第三方库导出作为动态库，那么install的时候需要附带
+    #install(TARGETS yaml-cpp
+    #        EXPORT yaml-toolTargets
+    #)
+endif ()
 
 
 

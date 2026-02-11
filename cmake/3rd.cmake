@@ -10,3 +10,7 @@ set_target_properties(yaml-cpp
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
+
+set_target_properties(yaml-cpp PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
+)
