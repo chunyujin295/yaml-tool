@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.21)
 project(yaml-tool)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -63,31 +63,54 @@ set_target_properties(yaml-tool
 )
 
 
-# 发布/安装脚本
+## 发布/安装脚本
+#if (YAML_TOOL_INSTALL)
+#    install(TARGETS yaml-tool
+#            EXPORT yaml-toolTargets
+#            RUNTIME DESTINATION bin      # Windows DLL
+#            LIBRARY DESTINATION lib      # .so / .dylib
+#            ARCHIVE DESTINATION lib      # static lib / import lib
+#    )
+#    install(
+#            DIRECTORY include/
+#            DESTINATION include
+#    )
+#
+#    # 生成Config文件，确保调用方可以使用find_package
+#    install(EXPORT yaml-toolTargets
+#            FILE yaml-toolTargets.cmake
+#            NAMESPACE yaml-tool::
+#            DESTINATION lib/cmake/yaml-tool
+#    )
+#
+#    # 如果第三方库导出作为动态库，那么install的时候需要附带
+#    #install(TARGETS yaml-cpp
+#    #        EXPORT yaml-toolTargets
+#    #)
+#endif ()
+
+
+include(CMakeDependentOption)
+
+# 只有顶层工程才默认开启 install（作为依赖时默认关闭）
+cmake_dependent_option(YAML_TOOL_INSTALL "Install yaml-tool" ON
+        "PROJECT_IS_TOP_LEVEL" OFF)
+
 if (YAML_TOOL_INSTALL)
     install(TARGETS yaml-tool
             EXPORT yaml-toolTargets
-            RUNTIME DESTINATION bin      # Windows DLL
-            LIBRARY DESTINATION lib      # .so / .dylib
-            ARCHIVE DESTINATION lib      # static lib / import lib
-    )
-    install(
-            DIRECTORY include/
-            DESTINATION include
-    )
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
 
-    # 生成Config文件，确保调用方可以使用find_package
+    install(DIRECTORY include/ DESTINATION include)
+
     install(EXPORT yaml-toolTargets
             FILE yaml-toolTargets.cmake
             NAMESPACE yaml-tool::
-            DESTINATION lib/cmake/yaml-tool
-    )
+            DESTINATION lib/cmake/yaml-tool)
+endif()
 
-    # 如果第三方库导出作为动态库，那么install的时候需要附带
-    #install(TARGETS yaml-cpp
-    #        EXPORT yaml-toolTargets
-    #)
-endif ()
 
 
 
