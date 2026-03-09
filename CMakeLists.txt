@@ -5,8 +5,19 @@ set(CMAKE_CXX_STANDARD 17)
 # debug版本导出库带d后缀
 set(CMAKE_DEBUG_POSTFIX d)
 
+# MinGW下静态链接通用依赖库
+if (MINGW)
+    add_link_options(
+            -static-libgcc
+            -static-libstdc++
+            -Wl,-Bstatic
+            -lwinpthread
+            -Wl,-Bdynamic
+    )
+endif()
+
 option(YAML_TOOL_BUILD_SHARED_LIBS "Build yaml-tool shared library" ON)
-option(YAML_TOOL_INSTALL "Install yaml-tool" ON)
+option(YAML_TOOL_INSTALL "Install yaml-tool" OFF)
 
 if (YAML_TOOL_BUILD_SHARED_LIBS)
     set(yaml-tool-type SHARED)
